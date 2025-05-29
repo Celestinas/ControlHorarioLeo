@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Horario - Ortoleku</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    h1 {
+      margin-bottom: 2rem;
+    }
+    .button {
+      font-size: 1.5rem;
+      padding: 1rem 2rem;
+      margin: 1rem;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      cursor: pointer;
+      width: 80%;
+      max-width: 300px;
+    }
+    #pinInput {
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      margin-top: 1rem;
+      display: none;
+    }
+    #submitPin {
+      display: none;
+      margin-top: 1rem;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Control Horario</h1>
+  <button class="button" onclick="startAction('Entrar')">🟢 Entrar</button><br>
+  <button class="button" onclick="startAction('Comer')">🍴 Comer</button><br>
+  <button class="button" onclick="startAction('Volver')">🔙 Volver</button><br>
+  <button class="button" onclick="startAction('Salir')">🔴 Salir</button><br>
+
+  <input type="password" id="pinInput" placeholder="Introduce PIN">
+  <button class="button" id="submitPin" onclick="submitAction()">Enviar</button>
+
+  <script>
+    let currentAction = "";
+    const correctPin = "1234"; // Cambiar este PIN más adelante
+
+    function startAction(action) {
+      currentAction = action;
+      document.getElementById('pinInput').style.display = 'block';
+      document.getElementById('submitPin').style.display = 'inline-block';
+    }
+
+    function submitAction() {
+      const pin = document.getElementById('pinInput').value;
+      if (pin !== correctPin) {
+        alert("PIN incorrecto");
+        return;
+      }
+
+      const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSeap4NrKjF9Xpxd-0ghZU2_GTkYpYCTfhcWUQk7HInHomdgAQ/formResponse";
+      const formData = new FormData();
+      const timestamp = new Date().toISOString();
+
+      // Mapeo real de campos del formulario
+      formData.append("entry.1323435272", timestamp);  // Fecha/Hora
+      formData.append("entry.1728531495", currentAction); // Acción
+
+      fetch(formURL, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData
+      }).then(() => {
+        alert(`Registro de '${currentAction}' enviado correctamente.`);
+        document.getElementById('pinInput').value = "";
+        document.getElementById('pinInput').style.display = 'none';
+        document.getElementById('submitPin').style.display = 'none';
+      }).catch(err => {
+        alert("Error al enviar el registro");
+        console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
